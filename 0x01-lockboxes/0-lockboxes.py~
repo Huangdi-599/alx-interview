@@ -23,4 +23,3 @@ def can_unlock_all(boxes):
 
     # Check if all boxes are unlocked
     return all(unlocked)
-
