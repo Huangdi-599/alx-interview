@@ -1,50 +1,41 @@
 #!/usr/bin/python3
+""" N QUEENS ALGORITHM WITH BACKTRACKING (RECURSION INSIDE LOOP) """
 
 import sys
 
-def is_safe(board, row, col, n):
-    # Check the left side of the current row
-    for i in range(col):
-        if board[row][i] == 1:
-            return False
+class NQueen:
+    """ Class for solving N Queen Problem """
+    
+    def __init__(self, n):
+        """ Initialize N Queen Problem with n queens """
+        self.n = n
+        self.x = [0 for _ in range(n + 1)]
+        self.solutions = []
 
-    # Check upper diagonal on the left side
-    for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
-        if board[i][j] == 1:
-            return False
+    def can_place_queen(self, k, i):
+        """ Check if a queen can be placed at column i for the kth row """
+        for j in range(1, k):
+            if self.x[j] == i or abs(self.x[j] - i) == abs(j - k):
+                return False
+        return True
 
-    # Check lower diagonal on the left side
-    for i, j in zip(range(row, n, 1), range(col, -1, -1)):
-        if board[i][j] == 1:
-            return False
+    def solve_n_queens(self, k):
+        """ Solve the N Queen problem recursively """
+        for i in range(1, self.n + 1):
+            if self.can_place_queen(k, i):
+                self.x[k] = i
+                if k == self.n:
+                    solution = [[row - 1, col - 1] for row, col in enumerate(self.x[1:], start=1)]
+                    self.solutions.append(solution)
+                else:
+                    self.solve_n_queens(k + 1)
 
-    return True
+    def find_solutions(self):
+        """ Find all solutions to the N Queen problem """
+        self.solve_n_queens(1)
+        return self.solutions
 
-def solve_n_queens_util(board, col, n, solutions):
-    if col == n:
-        solutions.append([[row, col] for row in range(n)])
-        return
-
-    for i in range(n):
-        if is_safe(board, i, col, n):
-            board[i][col] = 1
-            solve_n_queens_util(board, col + 1, n, solutions)
-            board[i][col] = 0
-
-def solve_n_queens(n):
-    if n < 4:
-        print("N must be at least 4")
-        sys.exit(1)
-
-    board = [[0 for _ in range(n)] for _ in range(n)]
-    solutions = []
-
-    solve_n_queens_util(board, 0, n, solutions)
-
-    for solution in solutions:
-        print(solution)
-
-if __name__ == "__main__":
+if __name__ == "__main":
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
         sys.exit(1)
@@ -55,4 +46,12 @@ if __name__ == "__main__":
         print("N must be a number")
         sys.exit(1)
 
-    solve_n_queens(N)
+    if N < 4:
+        print("N must be at least 4")
+        sys.exit(1)
+
+    queen = NQueen(N)
+    solutions = queen.find_solutions()
+
+    for solution in solutions:
+        print(solution)
